@@ -1,4 +1,4 @@
-# Shipping Label Processor
+# Shipping LabelCrop
 
 This project is designed to process shipping label PDFs by cropping, resizing, and rotating them to ensure they can be printed in a 4x6 format with high quality.
 
