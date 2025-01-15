@@ -1,6 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import os
+import sys
+
 block_cipher = None
+
+# Define the path to the Python DLLs
+python_dll_path = os.path.join(sys.exec_prefix, 'DLLs')
 
 a = Analysis(
     ['src/main.py'],
