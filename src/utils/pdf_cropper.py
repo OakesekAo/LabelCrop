@@ -1,4 +1,4 @@
-from tkinter import Canvas, PhotoImage, NW, Button, Toplevel
+from tkinter import Canvas, PhotoImage, NW, Button, Toplevel, filedialog
 from PIL import Image, ImageTk
 import fitz  # PyMuPDF
 from utils.pdf_processor import resize_pdf, rotate_pdf, crop_pdf
@@ -19,6 +19,8 @@ class PDFCropper:
         self.pdf_path = None
         self.cropped_image = None
         self.rotation_angle = 0
+        self.cropped_window = None
+        self.cropped_canvas = None
 
         self.canvas.bind("<ButtonPress-1>", self.on_button_press)
         self.canvas.bind("<B1-Motion>", self.on_mouse_drag)
@@ -65,22 +67,27 @@ class PDFCropper:
     def update_cropped_image(self):
         self.cropped_photo_image = ImageTk.PhotoImage(self.cropped_image)
 
-        # Create a new window to show the cropped image
-        self.cropped_window = Toplevel(self.root)
-        self.cropped_window.title("Cropped Image")
-        cropped_canvas = Canvas(self.cropped_window, width=self.cropped_image.width, height=self.cropped_image.height)
-        cropped_canvas.pack()
-        cropped_canvas.create_image(0, 0, anchor=NW, image=self.cropped_photo_image)
+        if self.cropped_window is None:
+            # Create a new window to show the cropped image
+            self.cropped_window = Toplevel(self.root)
+            self.cropped_window.title("Cropped Image")
+            self.cropped_canvas = Canvas(self.cropped_window, width=self.cropped_image.width, height=self.cropped_image.height)
+            self.cropped_canvas.pack()
+            self.cropped_canvas.create_image(0, 0, anchor=NW, image=self.cropped_photo_image)
 
-        # Add rotation and confirm/cancel buttons
-        rotate_left_button = Button(self.cropped_window, text="Rotate Left", command=self.rotate_left)
-        rotate_left_button.pack(side="left")
-        rotate_right_button = Button(self.cropped_window, text="Rotate Right", command=self.rotate_right)
-        rotate_right_button.pack(side="left")
-        confirm_button = Button(self.cropped_window, text="Confirm", command=self.confirm_crop)
-        confirm_button.pack(side="left")
-        cancel_button = Button(self.cropped_window, text="Cancel", command=self.cropped_window.destroy)
-        cancel_button.pack(side="right")
+            # Add rotation and confirm/cancel buttons
+            rotate_left_button = Button(self.cropped_window, text="Rotate Left", command=self.rotate_left)
+            rotate_left_button.pack(side="left")
+            rotate_right_button = Button(self.cropped_window, text="Rotate Right", command=self.rotate_right)
+            rotate_right_button.pack(side="left")
+            confirm_button = Button(self.cropped_window, text="Confirm", command=self.confirm_crop)
+            confirm_button.pack(side="left")
+            cancel_button = Button(self.cropped_window, text="Cancel", command=self.cancel_crop)
+            cancel_button.pack(side="right")
+        else:
+            # Update the existing window with the new cropped image
+            self.cropped_canvas.config(width=self.cropped_image.width, height=self.cropped_image.height)
+            self.cropped_canvas.create_image(0, 0, anchor=NW, image=self.cropped_photo_image)
 
     def rotate_left(self):
         self.rotation_angle -= 90
@@ -93,19 +100,31 @@ class PDFCropper:
         self.update_cropped_image()
 
     def confirm_crop(self):
-        self.cropped_window.destroy()
-        self.crop_pdf()
-        self.root.destroy()
+        # Open save file dialog
+        output_pdf_path = filedialog.asksaveasfilename(
+            defaultextension=".pdf",
+            filetypes=[("PDF files", "*.pdf")],
+            initialfile="output_label.pdf",
+            title="Save Output PDF"
+        )
+        if output_pdf_path:
+            self.cropped_window.destroy()
+            self.crop_pdf(output_pdf_path)
+            self.root.destroy()
 
-    def crop_pdf(self):
+    def cancel_crop(self):
+        if self.cropped_window:
+            self.cropped_window.destroy()
+            self.cropped_window = None
+            self.cropped_canvas = None
+
+    def crop_pdf(self, output_pdf_path):
         if self.pdf_path and self.start_x and self.start_y and self.end_x and self.end_y:
             # Convert canvas coordinates to PDF coordinates
             canvas_bbox = self.canvas.bbox(self.rect)
             crop_box = (canvas_bbox[0], canvas_bbox[1], canvas_bbox[2], canvas_bbox[3])
             print(f"Crop box: {crop_box}")
-            output_pdf_path = "output_label.pdf"
             crop_pdf(self.pdf_path, output_pdf_path, crop_box)
             if self.rotation_angle != 0:
                 rotate_pdf(output_pdf_path, output_pdf_path, self.rotation_angle)
-            #resize_pdf(output_pdf_path, output_pdf_path, 288, 432)
             print(f"Processed PDF saved as {output_pdf_path}")
