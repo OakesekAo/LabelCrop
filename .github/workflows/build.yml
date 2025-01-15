@@ -26,16 +26,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install pyinstaller
 
-    - name: Copy DLLs
-      run: |
-        mkdir -p C:/Python311/DLLs/
-        cp C:/Python311/DLLs/_tkinter.pyd .
-        cp C:/Python311/DLLs/tcl86t.dll .
-        cp C:/Python311/DLLs/tk86t.dll .
-
     - name: Build with PyInstaller
       run: |
-        pyinstaller --clean --noconfirm ShippingLabelProcessor.spec
+        pyinstaller --clean --noconfirm --onefile ShippingLabelProcessor.spec
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
