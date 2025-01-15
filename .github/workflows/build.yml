@@ -28,7 +28,7 @@ jobs:
 
     - name: Build with PyInstaller
       run: |
-        pyinstaller --clean --noconfirm --onefile ShippingLabelProcessor.spec
+        pyinstaller --clean --noconfirm ShippingLabelProcessor.spec
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
