@@ -7,9 +7,9 @@ a = Analysis(
     pathex=['.'],
     binaries=[],
     datas=[
-        ('C:/Python311/DLLs/_tkinter.pyd', '.'),
-        ('C:/Python311/DLLs/tcl86t.dll', '.'),
-        ('C:/Python311/DLLs/tk86t.dll', '.')
+        (os.path.join(python_dll_path, '_tkinter.pyd'), '.'),
+        (os.path.join(python_dll_path, 'tcl86t.dll'), '.'),
+        (os.path.join(python_dll_path, 'tk86t.dll'), '.')
     ],
     hiddenimports=[],
     hookspath=[],
