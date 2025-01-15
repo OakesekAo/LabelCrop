@@ -7,13 +7,38 @@ This project is designed to process shipping label PDFs by cropping, resizing, a
 ```
 
 ├── src
-│   ├── main.py          # Entry point for processing shipping labels
-│   ├── utils
-│   │   └── pdf_processor.py  # Utility functions for PDF manipulation
-├── requirements.txt     # List of dependencies
-├── setup.py             # Packaging information
-└── README.md            # Project documentation
+│ ├── main.py # Entry point for processing shipping labels
+│ ├── utils
+│ │ ├── pdf_processor.py # Utility functions for PDF manipulation
+│ │ └── pdf_cropper.py # GUI for cropping and rotating PDFs
+├── requirements.txt # List of dependencies
+├── setup.py # Packaging information
+└── README.md # Project documentation
+
+
 ```
+
+### Create and Activate Virtual Environment
+
+1. **Create a virtual environment**:
+   - On Windows:
+     ```
+     python -m venv venv
+     ```
+   - On macOS/Linux:
+     ```
+     python3 -m venv venv
+     ```
+
+2. **Activate the virtual environment**:
+   - On Windows:
+     ```
+     venv\Scripts\activate
+     ```
+   - On macOS/Linux:
+     ```
+     source venv/bin/activate
+     ```
 
 ## Installation
 
