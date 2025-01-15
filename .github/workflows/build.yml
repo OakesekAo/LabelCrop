@@ -1,0 +1,44 @@
+name: Build ShippingLabelProcessor
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+
+    - name: Copy DLLs
+      run: |
+        mkdir -p C:/Python311/DLLs/
+        cp C:/Python311/DLLs/_tkinter.pyd .
+        cp C:/Python311/DLLs/tcl86t.dll .
+        cp C:/Python311/DLLs/tk86t.dll .
+
+    - name: Build with PyInstaller
+      run: |
+        pyinstaller --clean --noconfirm ShippingLabelProcessor.spec
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ShippingLabelProcessor
+        path: dist/ShippingLabelProcessor/
